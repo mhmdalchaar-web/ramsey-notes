@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Paths, Cycles, Complete & Bipartite Graphs — Article + Playground</title>
+<style>
+  :root{
+    --bg:#0f1320; --paper:#11162a; --ink:#eaf2ff; --ink-d:#b9c4e3; --rule:#222a45;
+    --accent:#7aa2ff; --accent2:#78e3a1; --warn:#ffad60;
+  }
+  html,body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;}
+  header{padding:26px 20px 8px; border-bottom:1px solid var(--rule)}
+  header .title{max-width:1100px; margin:0 auto}
+  h1{margin:0 0 4px; font-size:28px}
+  h2{margin:22px 0 10px; font-size:22px}
+  h3{margin:20px 0 8px; font-size:18px}
+  main{max-width:1100px; margin:0 auto; padding:16px 20px 60px; display:grid; grid-template-columns: 1.1fr 1fr; gap:22px}
+  article{background:var(--paper); border:1px solid var(--rule); border-radius:16px; padding:18px 18px}
+  .para{color:var(--ink-d)}
+  .defbox{background:#0c1021; border:1px solid #202745; border-radius:12px; padding:12px 14px; margin:8px 0 12px}
+  .inline-code{padding:2px 6px; background:#0b0f1c; border:1px solid #1d2340; border-radius:6px}
+  .aside{font-size:14px; color:#9fb1df}
+  /* playground */
+  .panel{background:var(--paper); border:1px solid var(--rule); border-radius:16px; padding:16px; display:grid; grid-template-rows:auto auto 1fr}
+  .controls{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .controls label{font-size:13px; color:var(--ink-d)}
+  .controls input,.controls select{width:100%; padding:8px 10px; border:1px solid #263052; border-radius:10px; background:#0e1320; color:var(--ink); outline:none}
+  .controls input:focus,.controls select:focus{border-color:var(--accent)}
+  .row{display:flex; gap:10px; margin-top:10px}
+  button{background:linear-gradient(180deg, var(--accent), #5977ff); color:white; border:none; border-radius:12px; padding:9px 12px; cursor:pointer; font-weight:600; box-shadow:0 6px 20px rgba(90,110,255,.25)}
+  button.secondary{background:linear-gradient(180deg, #2a3149, #1e2438)}
+  .stage{margin-top:12px; background:#0a0e18; border:1px solid #20263c; border-radius:14px; min-height:420px; position:relative; overflow:hidden}
+  svg{width:100%; height:100%}
+  .badge{position:absolute; top:10px; left:12px; font-size:13px; color:#cbd6ff; background:#12182a; padding:6px 10px; border:1px solid #273055; border-radius:999px}
+  .status{font-size:13px; color:#a6b4db; min-height:20px; margin-top:8px}
+  .warn{color:var(--warn)}
+  .examples{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+  .examples button{padding:6px 10px; border-radius:10px; font-size:13px}
+  .sec{border-top:1px dashed #243055; margin-top:14px; padding-top:10px}
+  footer{max-width:1100px; margin:0 auto; padding:16px 20px 34px; color:#92a2cc; border-top:1px solid var(--rule)}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>Graph Basics for Ramsey Theory</h1>
+    <div class="aside">Definitions first; then interact with each object directly.</div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ ARTICLE (left) ============ -->
+  <article>
+    <h2>1. Paths \(P_n\)</h2>
+    <div class="defbox">
+      <strong>Definition.</strong> The <em>path</em> \(P_n\) has vertices \(v_1,\dots,v_n\) and edges \(v_iv_{i+1}\) for \(i=1,\dots,n-1\).
+      (So \(P_3\) is a 3-vertex chain of length 2.)
+    </div>
+    <div class="para">Notation tip: we often call \(n\) the <em>order</em> (number of vertices). Paths have two degree-1 endpoints and all other degrees 2.</div>
+    <div class="sec"></div>
+
+    <h2>2. Cycles \(C_n\)</h2>
+    <div class="defbox">
+      <strong>Definition.</strong> The <em>cycle</em> \(C_n\) (\(n\ge 3\)) is \(P_n\) plus the closing edge \(v_nv_1\).
+    </div>
+    <div class="para">Every vertex has degree 2. The length is \(n\).</div>
+    <div class="sec"></div>
+
+    <h2>3. Complete graphs \(K_n\)</h2>
+    <div class="defbox">
+      <strong>Definition.</strong> The <em>complete graph</em> \(K_n\) has all \(\binom{n}{2}\) possible edges among \(n\) vertices.
+    </div>
+    <div class="para">Cliques are the “densest” simple graphs; \(K_3\) is a triangle.</div>
+    <div class="sec"></div>
+
+    <h2>4. Complete bipartite graphs \(K_{m,n}\)</h2>
+    <div class="defbox">
+      <strong>Definition.</strong> Partition the vertices into two parts of sizes \(m,n\). Connect every vertex of one part to every vertex of the other; no edges inside a part. The result is \(K_{m,n}\).
+    </div>
+    <div class="para">Special case: the <em>star</em> \(K_{1,3}\) has one center joined to three leaves.</div>
+    <div class="sec"></div>
+
+    <h2>5. Disjoint unions: \(2K_3\) and \(mK_n\)</h2>
+    <div class="defbox">
+      <strong>Definition.</strong> \(2K_3\) is the disjoint union of two triangles; \(mK_n\) is the disjoint union of \(m\) copies of \(K_n\).
+    </div>
+    <div class="para">We use these often in Ramsey statements like \(R(2K_3,K_3)=8\).</div>
+
+    <h3 class="sec">How to use this page</h3>
+    <div class="para">On the right, choose a family, set parameters, and click <span class="inline-code">Draw</span>. Right below each definition above, try the matching preset (e.g. \(P_3\), \(C_4\), \(K_{1,3}\)).</div>
+  </article>
+
+  <!-- ============ PLAYGROUND (right) ============ -->
+  <section class="panel">
+    <div>
+      <h2 style="margin:4px 0 10px;">Try it: draw a graph</h2>
+      <div class="controls">
+        <div>
+          <label>Graph family</label>
+          <select id="family">
+            <option value="P_n">Path P_n</option>
+            <option value="C_n">Cycle C_n</option>
+            <option value="K_n">Complete K_n</option>
+            <option value="K_mn">Complete bipartite K_{m,n}</option>
+            <option value="twoK3">2K_3</option>
+            <option value="mKn">mK_n</option>
+          </select>
+        </div>
+        <div id="params"></div>
+      </div>
+      <div class="row">
+        <button id="drawBtn">Draw</button>
+        <button id="clearBtn" class="secondary">Clear</button>
+      </div>
+      <div class="examples">
+        <button data-demo="P_n" data-n="3">P₃</button>
+        <button data-demo="C_n" data-n="4">C₄</button>
+        <button data-demo="K_n" data-n="5">K₅</button>
+        <button data-demo="K_mn" data-m="1" data-n="3">K₁,₃</button>
+        <button data-demo="twoK3">2K₃</button>
+        <button data-demo="mKn" data-m="3" data-n="4">3K₄</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div id="badge" class="badge">Ready</div>
+      <svg id="svg" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Extend this with a “Ramsey mode” (2-color edges + automatic pattern check) or
+  a storyboard that walks through the proof of \(R(2K_3,K_3)=8\). Say the word and I’ll wire it in.
+</footer>
+
+<script>
+/* ---------- quick $ helpers ---------- */
+const $ = (sel, root=document) => root.querySelector(sel);
+const familySel = $("#family"), paramsDiv = $("#params");
+const svg = $("#svg"), badge = $("#badge"), statusEl = $("#status");
+const W=1000, H=680;
+
+/* ---------- dynamic parameter UI ---------- */
+const builders = {
+  "P_n": () => paramInputs([{id:"n", label:"n (≥2)", min:2, val:6}]),
+  "C_n": () => paramInputs([{id:"n", label:"n (≥3)", min:3, val:6}]),
+  "K_n": () => paramInputs([{id:"n", label:"n (≥1)", min:1, val:6}]),
+  "K_mn": () => paramInputs([{id:"m", label:"m (≥1)", min:1, val:3},{id:"n", label:"n (≥1)", min:1, val:5}]),
+  "twoK3": () => paramInputs([], "Fixed: two disjoint triangles."),
+  "mKn": () => paramInputs([{id:"m", label:"m copies (≥1)", min:1, val:3},{id:"n", label:"clique size n (≥1)", min:1, val:4}]),
+};
+function paramInputs(list, note){
+  paramsDiv.innerHTML = "";
+  if(list.length){
+    list.forEach(p=>{
+      const wrap = document.createElement("div");
+      wrap.innerHTML = `<label>${p.label}</label>
+        <input type="number" id="${p.id}" min="${p.min}" value="${p.val ?? p.min}" />`;
+      paramsDiv.appendChild(wrap);
+    });
+  }
+  if(note){
+    const small=document.createElement("div");
+    small.style.color="#9fb1df"; small.style.fontSize="13px"; small.style.marginTop="6px";
+    small.textContent = note; paramsDiv.appendChild(small);
+  }
+}
+familySel.addEventListener("change", ()=>builders[familySel.value]());
+builders[familySel.value]();
+
+/* ---------- layouts ---------- */
+function circleLayout(n, cx, cy, r){
+  const pts=[]; const phi=i=>2*Math.PI*i/n - Math.PI/2;
+  for(let i=0;i<n;i++) pts.push([cx + r*Math.cos(phi(i)), cy + r*Math.sin(phi(i))]);
+  return pts;
+}
+function lineLayout(n, x1, x2, y){
+  const pts=[]; for(let i=0;i<n;i++){ const t=(n===1)?0.5:i/(n-1); pts.push([x1+t*(x2-x1), y]); } return pts;
+}
+function bipartiteLayout(m,n){
+  const step = (H-240)/Math.max(1, Math.max(m-1,n-1));
+  const L = Array.from({length:m},(_,i)=>[160, 120+i*step]);
+  const R = Array.from({length:n},(_,j)=>[W-160, 120+j*step]);
+  return {L,R};
+}
+
+/* ---------- draw primitives ---------- */
+function clearSVG(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+function fadeIn(el, dur){ el.animate([{opacity:0},{opacity:1}], {duration:dur, fill:"forwards"}); }
+function drawEdge(a,b,color="#7aa2ff", width=3){
+  const e=document.createElementNS("http://www.w3.org/2000/svg","line");
+  e.setAttribute("x1",a[0]); e.setAttribute("y1",a[1]); e.setAttribute("x2",b[0]); e.setAttribute("y2",b[1]);
+  e.setAttribute("stroke",color); e.setAttribute("stroke-width",width); e.setAttribute("stroke-linecap","round"); e.style.opacity=0;
+  svg.appendChild(e); fadeIn(e,220); return e;
+}
+function drawVertex(p, label){
+  const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+  const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+  c.setAttribute("cx",p[0]); c.setAttribute("cy",p[1]); c.setAttribute("r",8);
+  c.setAttribute("fill","#fff"); c.setAttribute("stroke","#1c2340"); c.setAttribute("stroke-width","1.2");
+  const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+  t.setAttribute("x",p[0]); t.setAttribute("y",p[1]-14); t.setAttribute("text-anchor","middle");
+  t.setAttribute("fill","#cbd6ff"); t.setAttribute("font-size","14"); t.textContent=label;
+  g.appendChild(c); g.appendChild(t); g.style.opacity=0; svg.appendChild(g); fadeIn(g,220); return g;
+}
+
+/* ---------- family renderers ---------- */
+function warn(msg){ statusEl.innerHTML=`<span class="warn">⚠ ${msg}</span>`; }
+function ok(msg){ statusEl.textContent=msg; }
+
+function render_Pn(n){
+  if(n<2) return warn("P_n requires n ≥ 2");
+  const pts=lineLayout(n,120,W-120,H/2);
+  for(let i=0;i<n-1;i++) drawEdge(pts[i],pts[i+1]); for(let i=0;i<n;i++) drawVertex(pts[i],i+1);
+  badge.textContent=`P_${n}`; ok("");
+}
+function render_Cn(n){
+  if(n<3) return warn("C_n requires n ≥ 3");
+  const pts=circleLayout(n,W/2,H/2,Math.min(W,H)*0.33);
+  for(let i=0;i<n;i++) drawEdge(pts[i],pts[(i+1)%n]); for(let i=0;i<n;i++) drawVertex(pts[i],i+1);
+  badge.textContent=`C_${n}`; ok("");
+}
+function render_Kn(n){
+  if(n<1) return warn("K_n requires n ≥ 1");
+  const pts=circleLayout(n,W/2,H/2,Math.min(W,H)*0.33);
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) drawEdge(pts[i],pts[j]);
+  for(let i=0;i<n;i++) drawVertex(pts[i],i+1);
+  badge.textContent=`K_${n}`; ok("");
+}
+function render_Kmn(m,n){
+  if(m<1||n<1) return warn("K_{m,n} needs m,n ≥ 1");
+  const {L,R}=bipartiteLayout(m,n);
+  for(let i=0;i<m;i++) for(let j=0;j<n;j++) drawEdge(L[i],R[j]);
+  for(let i=0;i<m;i++) drawVertex(L[i],`L${i+1}`); for(let j=0;j<n;j++) drawVertex(R[j],`R${j+1}`);
+  badge.textContent=`K_{${m},${n}}`; ok("");
+}
+function render_twoK3(){
+  const a=circleLayout(3,W/2-180,H/2,90), b=circleLayout(3,W/2+180,H/2,90);
+  [a,b].forEach((pts,k)=>{ for(let i=0;i<3;i++) drawEdge(pts[i],pts[(i+1)%3]); for(let i=0;i<3;i++) drawVertex(pts[i], (k?["D","E","F"]:["A","B","C"])[i]); });
+  badge.textContent="2K₃"; ok("");
+}
+function render_mKn(m,n){
+  if(m<1||n<1) return warn("mK_n needs m,n ≥ 1");
+  const rows=(m<=4)?1:2, perRow=Math.ceil(m/rows), r=70;
+  const x0=W/2 - (perRow-1)*180/2, y0=H/2 - (rows-1)*180/2; let count=0;
+  for(let row=0;row<rows;row++){
+    for(let col=0; col<perRow && count<m; col++,count++){
+      const cx=x0+col*180, cy=y0+row*180, pts=circleLayout(n,cx,cy,r);
+      for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) drawEdge(pts[i],pts[j]);
+      for(let i=0;i<n;i++) drawVertex(pts[i],`${count+1}.${i+1}`);
+    }
+  }
+  badge.textContent=`mK_n  (m=${m}, n=${n})`; ok("");
+}
+
+/* ---------- wiring ---------- */
+function clearDraw(){ while(svg.firstChild) svg.removeChild(svg.firstChild); badge.textContent="Ready"; ok("Cleared."); }
+function draw(){
+  clearSVG();
+  const fam=familySel.value;
+  if(fam==="P_n") return render_Pn(+$("#n").value);
+  if(fam==="C_n") return render_Cn(+$("#n").value);
+  if(fam==="K_n") return render_Kn(+$("#n").value);
+  if(fam==="K_mn") return render_Kmn(+$("#m").value, +$("#n").value);
+  if(fam==="twoK3") return render_twoK3();
+  if(fam==="mKn") return render_mKn(+$("#m").value, +$("#n").value);
+}
+$("#drawBtn").addEventListener("click", draw);
+$("#clearBtn").addEventListener("click", clearDraw);
+document.querySelectorAll(".examples button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const d=btn.dataset.demo; familySel.value=d; builders[d]();
+    if(btn.dataset.m) $("#m").value=btn.dataset.m;
+    if(btn.dataset.n) $("#n").value=btn.dataset.n;
+    draw();
+  });
+});
+/* init */
+function clearSVG(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+builders[familySel.value]();
+render_Pn(6);
+</script>
+</body>
+</html>
